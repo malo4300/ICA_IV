@@ -2,13 +2,19 @@ import typing
 import numpy as np
 
 class dgp():
-    def __init__(self, mode="test"):
+    def __init__(self, mode = "Causal", noise_dict = False, prior = False):
+        if prior:
+            self.loc = prior['loc']
+            self.scale = prior['scale']
+        else:
+            self.loc = 0
+            self.scale = 1
+        self.noise = noise_dict
         self.mode = mode
-        self.loc = 0
-        self.scale = 1
 
-    def generate_data(self, n: int, I: int, J: int, random_state: int = 0, noise = False):
+    def generate_data(self, n: int, I: int, J: int, random_state: int = 0, ):
         np.random.seed(random_state)
+       
         self._generate_dag(J)
         self._generate_signals(n, J)
         self._generate_coefficients_matrix(J)
@@ -25,9 +31,9 @@ class dgp():
         for j in range(J):
             self.data[:, j] = self.mixing_matrix[j, :] @ self.signals.T
 
-        if noise:
+        if self.noise:
             print("Adding noise")
-            self.noise = np.random.normal(loc=0, scale=1, size=(n, J))
+            self.noise = np.random.normal(loc=self.noise['loc'], scale=self.noise["loc"], size=(n, J))
             self.data += self.noise
         
         # the treatment effect is in 1,0
@@ -50,11 +56,17 @@ class dgp():
         for i in range(3, J):
             self.adj_matrx[1, i] = 1
         
+        # introduce additional edges
+        if J > 3:
+            self.adj_matrx[0, 3] = 1 # control -> treatment
+        if J > 4:
+            self.adj_matrx[4, 3] = 1 # control1 -> control
+            self.adj_matrx[J-2, J-1] = 1 # control1 -> outcome
 
 
 
     def _generate_coefficients_matrix(self, J: int):
-        coef_of_edges = np.random.uniform(low=1, high=3, size=(J, J))
+        coef_of_edges = np.random.uniform(low=-3, high=3, size=(J, J))
         self.coef_mat = np.multiply(self.adj_matrx, coef_of_edges) 
 
     def _generate_signals(self, n: int, J):

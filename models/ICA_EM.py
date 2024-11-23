@@ -88,7 +88,7 @@ class VarEM():
         self.init_range = init_range
         self.tol = tol
 
-    def fit(self, X, J,   noise_params = {'mean': 0, 'std': 1}):
+    def fit(self, X, J,   noise_params = {'mean': 0, 'std': 1}, progress_bar = True):
         np.random.seed(self.random_seed)
         self.X = X
         self.J = J
@@ -105,13 +105,17 @@ class VarEM():
         self.sigma_matrix_inv = np.linalg.inv(self.sigma_matrix)
         self.Signals = np.zeros((self.n, self.J))
         self._initilize_A()
-        progress_bar = tqdm.tqdm(range(self.max_iter))
-        for i in progress_bar:
+        if progress_bar:
+            progress_bar_iter = tqdm.trange(self.max_iter)
+        else:  
+            progress_bar_iter = range(self.max_iter)
+        for i in progress_bar_iter:
             diff = self.update_A()
             if diff < self.tol:
                 print(f"Converged after {i} iterations with diff = {diff:.4f}")
                 break
-            progress_bar.set_description(f"Diff: {diff:.4f}")
+            if progress_bar:
+                progress_bar_iter.set_description(f"Diff: {diff:.4f}")
             
 
         
