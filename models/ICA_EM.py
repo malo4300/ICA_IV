@@ -63,7 +63,7 @@ class OverICA_EM(): # after "An EM algorithm for learning sparse and overcomplet
     
     def _gradient_s(self):
         dev =  self.A.T @ self.sigma_matrix_inv @ (self.X.T- self.A @ self.Signals.T)
-        grad_prior = -np.tanh(self.beta*self.Signals) # this is an approximation, see "Learning Overcomplete Representations"  
+        grad_prior = -np.tanh(self.beta*self.Signals)  # this is an approximation, see "Learning Overcomplete Representations"  
         return dev.T + grad_prior
     
     def _hess_prior(self, s):
@@ -94,12 +94,6 @@ class VarEM():
         self.J = J
         self.n = X.shape[0]
         self.I = X.shape[1]
-        if self.true_A is not None:
-            print("Initializing A with true A + noise")
-            self.A = self.true_A + np.random.normal(0, 1, (self.I, self.J))
-        else:
-            print("Initializing A randomly")
-            self.A = np.random.uniform(low = self.init_range[0] , high = self.init_range[1], size = (self.I, self.J))
         self.data_cov = np.cov(X.T, bias=True)
         self.xi = np.random.rand(self.n, self.J)
         self.noise_mean = noise_params['mean']
@@ -110,8 +104,8 @@ class VarEM():
             self.sigma_matrix = np.eye(X.shape[1]) * self.noise_std**2
         self.sigma_matrix_inv = np.linalg.inv(self.sigma_matrix)
         self.Signals = np.zeros((self.n, self.J))
+        self._initilize_A()
         progress_bar = tqdm.tqdm(range(self.max_iter))
-
         for i in progress_bar:
             diff = self.update_A()
             if diff < self.tol:
@@ -135,7 +129,13 @@ class VarEM():
         self.sigma_matrix = self.data_cov  - A_new @ temp/self.n
         self.sigma_matrix_inv = np.linalg.inv(self.sigma_matrix)
         
-        
+    def _initilize_A(self):
+        if self.true_A is not None:
+            print("Initializing A with true A + noise")
+            self.A = self.true_A + np.random.normal(0, 1, (self.I, self.J))
+        else:
+            print("Initializing A randomly")
+            self.A = np.random.uniform(low = self.init_range[0] , high = self.init_range[1], size = (self.I, self.J))
 
     def update_A(self):
         temp1 = np.zeros((self.I, self.J))
