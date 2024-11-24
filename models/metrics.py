@@ -2,13 +2,15 @@
 import scipy as sp
 import numpy as np
 import itertools
-def likelihood_score(signal_true, signal_est, true_paras = {'mean': 0, 'std': 1}):
+def likelihood_score(signal_true, signal_est, true_paras = {'mean': 0, 'scale': 1}, normalize = False):
     """the lower the better"""
+    if normalize:
+        signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_true, axis = 0)
     # true score 
-    ll = sp.stats.laplace.logpdf(signal_true, loc = true_paras['mean'], scale = true_paras['std'])
+    ll = sp.stats.laplace.logpdf(signal_true, loc = true_paras['mean'], scale = true_paras['scale'])
     ll = np.sum(ll)
     # estimated score
-    ll_est = sp.stats.laplace.logpdf(signal_est, loc = true_paras['mean'], scale = true_paras['std'])
+    ll_est = sp.stats.laplace.logpdf(signal_est, loc = true_paras['mean'], scale = true_paras['scale'])
     ll_est = np.sum(ll_est)
     return -(ll_est-ll)
 
@@ -29,5 +31,7 @@ def f_score(A_true, A_hat):
             best_permutation = perm
     return best_permutation, smallest_f_score/np.linalg.norm(A_true, 'fro')**2
 
-def mean_squared_error(signal_true, signal_est):
+def mean_squared_error(signal_true, signal_est, source_std = 1):
+    # set the scale of the estimated signal to the true signal column wise
+    signal_est = signal_est/np.std(signal_est, axis = 0)*source_std
     return np.mean((signal_true - signal_est)**2)
