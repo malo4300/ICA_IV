@@ -12,7 +12,7 @@ class dgp():
         self.noise = noise_dict
         self.mode = mode
 
-    def generate_data(self, n: int, I: int, J: int, random_state: int = 0, ):
+    def generate_data(self, n: int, I: int, J: int, random_state: int = 0,):
         np.random.seed(random_state)
        
         self._generate_dag(J)
@@ -32,7 +32,6 @@ class dgp():
             self.data[:, j] = self.mixing_matrix[j, :] @ self.signals.T
 
         if self.noise:
-            print("Adding noise")
             self.noise = np.random.normal(loc=self.noise['loc'], scale=self.noise["loc"], size=(n, J))
             self.data += self.noise
         

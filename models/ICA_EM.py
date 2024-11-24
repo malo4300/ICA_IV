@@ -98,6 +98,7 @@ class VarEM():
         self.xi = np.random.rand(self.n, self.J)
         self.noise_mean = noise_params['mean']
         self.noise_std = noise_params['std']
+        self.progress_bar = progress_bar
         if self.update_sigma:
             self.sigma_matrix = np.cov(X.T, bias=True)
         else:
@@ -118,8 +119,8 @@ class VarEM():
                 progress_bar_iter.set_description(f"Diff: {diff:.4f}")
             
 
-        
-        print("Estimating the signals")
+        if progress_bar:
+            print("Estimating the signals")
 
         self._estimate_signals()
         
@@ -135,10 +136,12 @@ class VarEM():
         
     def _initilize_A(self):
         if self.true_A is not None:
-            print("Initializing A with true A + noise")
+            if self.progress_bar:
+                print("Initializing A with true A + noise")
             self.A = self.true_A + np.random.normal(0, 1, (self.I, self.J))
         else:
-            print("Initializing A randomly")
+            if self.progress_bar:
+                print("Initializing A randomly")
             self.A = np.random.uniform(low = self.init_range[0] , high = self.init_range[1], size = (self.I, self.J))
 
     def update_A(self):
@@ -170,7 +173,11 @@ class VarEM():
         self.xi[i] = np.diag(omega_i @ (np.eye(self.J) - self.A.T @ M_i @ (np.eye(self.I) - x_outer @ M_i.T) @ self.A @ omega_i))
 
     def _estimate_signals(self):
-        for i in  tqdm.tqdm(range(self.n)):
+        if self.progress_bar:
+            iter_range = tqdm.trange(self.n)
+        else:
+            iter_range = range(self.n)
+        for i in  iter_range:
             omega_i = self._omega_mat(i)
             temp1 = np.linalg.inv(self.A.T @ self.sigma_matrix_inv @ self.A +np.linalg.inv(omega_i))
             temp2 = self.A.T @ self.sigma_matrix_inv @ self.X[i,:]

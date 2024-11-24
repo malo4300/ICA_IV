@@ -31,7 +31,7 @@ def f_score(A_true, A_hat):
             best_permutation = perm
     return best_permutation, smallest_f_score/np.linalg.norm(A_true, 'fro')**2
 
-def mean_squared_error(signal_true, signal_est, source_std = 1):
+def mean_squared_error(signal_true, signal_est):
     # set the scale of the estimated signal to the true signal column wise
-    signal_est = signal_est/np.std(signal_est, axis = 0)*source_std
+    signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_true, axis = 0)
     return np.mean((signal_true - signal_est)**2)
