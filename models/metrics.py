@@ -2,7 +2,7 @@
 import scipy as sp
 import numpy as np
 import itertools
-def likelihood_score(signal_true, signal_est, true_paras = {'mean': 0, 'scale': 1}, normalize = False):
+def likelihood_score(signal_true, signal_est, true_paras = {'mean': 0, 'scale': 1}, normalize = True):
     """the lower the better"""
     if normalize:
         signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_true, axis = 0)
@@ -31,7 +31,8 @@ def f_score(A_true, A_hat):
             best_permutation = perm
     return best_permutation, smallest_f_score/np.linalg.norm(A_true, 'fro')**2
 
-def mean_squared_error(signal_true, signal_est):
+def mean_squared_error(signal_true, signal_est, normalize = True):
     # set the scale of the estimated signal to the true signal column wise
-    signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_true, axis = 0)
+    if normalize:
+        signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_true, axis = 0)
     return np.mean((signal_true - signal_est)**2)

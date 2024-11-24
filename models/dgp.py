@@ -32,8 +32,7 @@ class dgp():
             self.data[:, j] = self.mixing_matrix[j, :] @ self.signals.T
 
         if self.noise:
-            self.noise = np.random.normal(loc=self.noise['loc'], scale=self.noise["loc"], size=(n, J))
-            self.data += self.noise
+            self.data += np.random.normal(loc=self.noise['loc'], scale=self.noise["scale"], size=(n, J))
         
         # the treatment effect is in 1,0
         self.treatment_effect = self.coef_mat[1, 0]
