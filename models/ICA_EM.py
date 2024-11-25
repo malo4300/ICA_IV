@@ -184,3 +184,47 @@ class VarEM():
             self.Signals[i,:] = temp1 @ temp2
 
 
+class CausalVarEM(VarEM):
+    def __init__(self, update_sigma=False, true_A=None, tol=1e-4, mode = "init", **kwargs):
+        if mode not in ["init", "each"]:
+            raise ValueError("mode must be either 'init' or 'each'")
+        self.mode = mode
+        super().__init__(update_sigma=update_sigma, true_A=true_A, tol=tol, **kwargs)
+    
+    def update_A(self): # we can force causal structure 
+        temp1 = np.zeros((self.I, self.J))
+        temp2 = np.zeros((self.J, self.J))
+
+        for i in range(self.n):
+            omega_i = self._omega_mat(i)
+            M_i = self._M_mat(omega_i)
+            x_outer = np.outer(self.X[i,:], self.X[i,:])
+            temp1 += x_outer @ M_i.T @ self.A @ omega_i
+            temp2 += omega_i @ (np.eye(self.J) - self.A.T @ M_i @ (np.eye(self.I) - x_outer @ M_i.T) @ self.A @ omega_i)
+            self._update_xi(i, M_i, omega_i, x_outer)
+        A_new = temp1 @ np.linalg.inv(temp2)
+        if self.update_sigma:
+            self._update_sigma(A_new)
+
+
+        # calculate the difference between the old and new A
+        diff = np.linalg.norm(self.A - A_new, ord='fro')
+        self.A = A_new
+        if self.mode == "each":
+            self._enforce_causal_structure()
+        return diff
+    
+    def _initilize_A(self):
+        super()._initilize_A()
+        self._enforce_causal_structure()
+        
+    def _enforce_causal_structure(self):
+        self.A[0,1] = 0
+        # set ones
+        self.A[0,0] = 1
+        self.A[1,1] = 1
+        # set controls to 1
+        for j in range(2, self.J-1):
+            self.A[j,j+1] = 1
+            
+
