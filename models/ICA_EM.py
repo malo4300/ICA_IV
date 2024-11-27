@@ -80,7 +80,7 @@ class OverICA_EM(): # after "An EM algorithm for learning sparse and overcomplet
     
 
 class VarEM():
-    def __init__(self, max_iter=100, update_sigma = False, random_seed = 42, true_A = None, init_range = [-3,3], tol = .02):
+    def __init__(self, max_iter=200, update_sigma = False, random_seed = 42, true_A = None, init_range = [-3,3], tol = 1e-4):
         self.max_iter = max_iter
         self.update_sigma = update_sigma
         self.random_seed = random_seed
@@ -185,7 +185,7 @@ class VarEM():
 
 
 class CausalVarEM(VarEM):
-    def __init__(self, update_sigma=False, true_A=None, tol=1e-4, mode = "init", **kwargs):
+    def __init__(self, update_sigma=False, true_A=None, tol=1e-4, mode = "each", **kwargs):
         if mode not in ["init", "each"]:
             raise ValueError("mode must be either 'init' or 'each'")
         self.mode = mode
