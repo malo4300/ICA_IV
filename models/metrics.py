@@ -5,7 +5,8 @@ import itertools
 def likelihood_score(signal_true, signal_est, true_paras = {'mean': 0, 'scale': 1}, normalize = True):
     """the lower the better"""
     if normalize:
-        signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_true, axis = 0)
+        signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_est, axis = 0)
+        signal_true = signal_true/np.std(signal_true, axis = 0)*np.std(signal_true, axis = 0)
     # true score 
     ll = sp.stats.laplace.logpdf(signal_true, loc = true_paras['mean'], scale = true_paras['scale'])
     ll = np.sum(ll)
@@ -34,5 +35,6 @@ def f_score(A_true, A_hat):
 def mean_squared_error(signal_true, signal_est, normalize = True):
     # set the scale of the estimated signal to the true signal column wise
     if normalize:
-        signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_true, axis = 0)
+        signal_est = signal_est/np.std(signal_est, axis = 0)*np.std(signal_est, axis = 0)
+        signal_true = signal_true/np.std(signal_true, axis = 0)*np.std(signal_true, axis = 0)
     return np.mean((signal_true - signal_est)**2)

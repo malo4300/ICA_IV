@@ -2,22 +2,22 @@ import typing
 import numpy as np
 
 class dgp():
-    def __init__(self, mode = "Causal", noise_dict = False, prior = False):
+    def __init__(self, noise_dict = False, prior = False):
         if prior:
             self.loc = prior['loc']
             self.scale = prior['scale']
         else:
             self.loc = 0
-            self.scale = 1
+            self.scale = 1/np.sqrt(2)
         self.noise = noise_dict
-        self.mode = mode
 
     def generate_data(self, n: int, I: int, J: int, random_state: int = 0,):
         np.random.seed(random_state)
        
         self._generate_dag(J)
-        self._generate_signals(n, J)
         self._generate_coefficients_matrix(J)
+        self._generate_signals(n, J)
+
         self._generate_mixing_matrix()
 
         # generate data
