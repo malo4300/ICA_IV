@@ -2,7 +2,7 @@
 import scipy as sp
 import numpy as np
 import itertools
-def likelihood_score(signal_true, signal_est, true_paras = {'mean': 0, 'scale': 1}, normalize = True):
+def likelihood_score(signal_true, signal_est, true_paras = {'mean': 0, 'scale': 1/np.sqrt(2)}, normalize = True):
     """the lower the better"""
     if normalize:
         signal_est = signal_est/np.std(signal_est, axis = 0)
