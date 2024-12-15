@@ -2,7 +2,7 @@ import typing
 import numpy as np
 
 class dgp():
-    def __init__(self, noise_dict = False, prior = False):
+    def __init__(self, noise_dict = {"loc" : 0, "scale" : 0}, prior = False):
         if prior:
             self.loc = prior['loc']
             self.scale = prior['scale']
