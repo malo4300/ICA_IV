@@ -1,7 +1,7 @@
 import numpy as np
 import tqdm
 class OverICA_EM(): # after "An EM algorithm for learning sparse and overcomplete representations".
-
+    # TODO: needs to be adjusted if the source distribution changes
     def __init__(self, iterations= 100, tolerance= 1e-3, learning_rate= 1e-3, beta = 10, random_seed = 42, true_A = None, init_range = [-3,3]):
         self.iterations = iterations
         self.tolerance = tolerance
@@ -95,7 +95,7 @@ class VarEM():
         self.n = X.shape[0]
         self.I = X.shape[1]
         self.data_cov = np.cov(X.T, bias=True)
-        self.xi = np.random.rand(self.n, self.J)
+        self.xi = np.random.uniform(.5,2, (self.n, self.J))
         self.noise_mean = noise_params['mean']
         self.noise_std = noise_params['std']
         self.progress_bar = progress_bar
@@ -220,12 +220,8 @@ class CausalVarEM(VarEM):
         
     def _enforce_causal_structure(self):
         # assume that the first column is the confounder source
-        # treatment second last and outcome last
+
         for j in range(0, self.J-1):
             self.A[j,j+1] = 1
         # treatment -> outcome  thus, no edge from outcome to treatment
         self.A[self.I-2, self.J-1] = 0
-
-
-            
-
