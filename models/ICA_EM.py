@@ -186,8 +186,8 @@ class VarEM():
 
 class CausalVarEM(VarEM):
     def __init__(self, update_sigma=False, true_A=None, tol=1e-4, mode = "each", **kwargs):
-        if mode not in ["init", "each"]:
-            raise ValueError("mode must be either 'init' or 'each'")
+        if mode not in ["init", "each", "zeros"]:
+            raise ValueError("mode must be either 'init', 'each', or 'zeros'")
         self.mode = mode
         super().__init__(update_sigma=update_sigma, true_A=true_A, tol=tol, **kwargs)
     
@@ -210,7 +210,7 @@ class CausalVarEM(VarEM):
         # calculate the difference between the old and new A
         diff = np.linalg.norm(self.A - A_new, ord='fro')
         self.A = A_new
-        if self.mode == "each":
+        if self.mode in ["each", "zeros"]:
             self._enforce_causal_structure()
         return diff
     
@@ -225,3 +225,9 @@ class CausalVarEM(VarEM):
             self.A[j,j+1] = 1
         # treatment -> outcome  thus, no edge from outcome to treatment
         self.A[self.I-2, self.J-1] = 0
+        if self.mode == "zeros": # enforce zeros
+            if self.J > 3:
+                J = self.J
+                I = self.I
+                self.A[0:(I-2), J-2] = 0 # no edge from treatment to controls
+                self.A[0:(I-2), J-1] = 0 # no edge from outcome to controls
