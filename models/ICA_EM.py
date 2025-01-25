@@ -186,8 +186,14 @@ class VarEM():
 
 class CausalVarEM(VarEM):
     def __init__(self, update_sigma=False, true_A=None, tol=1e-4, mode = "each", **kwargs):
-        if mode not in ["init", "each", "zeros"]:
-            raise ValueError("mode must be either 'init', 'each', or 'zeros'")
+        """mode: indicates how to enforce the causal structure
+        "init": enforce the causal structure at the initialization
+        "each": enforce the causal structure after each update of A
+        "pre_treatment_controlls": enforce the causal structure and set the edges from the treatment and outcome to the controls to zero
+        "lower_triangular": assumes that we know the dag such that we know the matrix is lower triangular"
+        """
+        if mode not in ["init", "each", "pre_treatment_controlls", "lower_triangular" ]:
+            raise ValueError("mode must be either 'init', 'each', or 'pre_treatment_controlls', 'lower_triangular'")
         self.mode = mode
         super().__init__(update_sigma=update_sigma, true_A=true_A, tol=tol, **kwargs)
     
@@ -210,7 +216,7 @@ class CausalVarEM(VarEM):
         # calculate the difference between the old and new A
         diff = np.linalg.norm(self.A - A_new, ord='fro')
         self.A = A_new
-        if self.mode in ["each", "zeros"]:
+        if self.mode in ["each", "pre_treatment_controlls", "lower_triangular"]:
             self._enforce_causal_structure()
         return diff
     
@@ -225,9 +231,16 @@ class CausalVarEM(VarEM):
             self.A[j,j+1] = 1
         # treatment -> outcome  thus, no edge from outcome to treatment
         self.A[self.I-2, self.J-1] = 0
-        if self.mode == "zeros": # enforce zeros
+        if self.mode == "pre_treatment_controlls": # enforce zeros
             if self.J > 3:
                 J = self.J
                 I = self.I
                 self.A[0:(I-2), J-2] = 0 # no edge from treatment to controls
                 self.A[0:(I-2), J-1] = 0 # no edge from outcome to controls
+
+        if self.mode == "lower_triangular":
+            for i in range(self.I):
+                for j in range(self.J):
+                    if i < j:
+                        self.A[i,j] = 0
+
