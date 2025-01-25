@@ -239,8 +239,7 @@ class CausalVarEM(VarEM):
                 self.A[0:(I-2), J-1] = 0 # no edge from outcome to controls
 
         if self.mode == "lower_triangular":
-            for i in range(self.I):
-                for j in range(self.J):
-                    if i < j:
-                        self.A[i,j] = 0
+            for j in range(0, self.J-1):
+                self.A[j,(j+2):self.J] = 0
+                
 
