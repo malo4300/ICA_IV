@@ -11,11 +11,11 @@ class dgp():
             self.scale = 1/np.sqrt(2)
         self.noise = noise_dict
 
-    def generate_data(self, n: int, I: int, J: int, random_state: int = 0,):
+    def generate_data(self, n: int, I: int, J: int, random_state: int = 0, init_range = [-3,3]):
         np.random.seed(random_state)
         self.no_controls = J - 3
         self._generate_dag(J)
-        self._generate_coefficients_matrix(J)
+        self._generate_coefficients_matrix(J, init_range = init_range)
         self._generate_signals(n, J)
 
         self._generate_mixing_matrix()
@@ -62,8 +62,8 @@ class dgp():
 
 
 
-    def _generate_coefficients_matrix(self, J: int):
-        coef_of_edges = np.random.uniform(low=-3, high=3, size=(J, J))
+    def _generate_coefficients_matrix(self, J: int, init_range = [-3,3]):
+        coef_of_edges = np.random.uniform(low=init_range[0], high=init_range[1], size=(J, J))
         self.coef_mat = np.multiply(self.adj_matrx, coef_of_edges) 
 
     def _generate_signals(self, n: int, J):
