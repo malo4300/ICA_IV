@@ -1,5 +1,7 @@
 __pycache__/
 results/
 sim_data/
+sim_data_VarEM/
 IV_test_code/
 *.csv
+.Rproj.user

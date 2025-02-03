@@ -9,6 +9,7 @@
 
 rm(list = ls()) # To clear all
 
+
 # load required packages
 packages <- c("boot",
               "corpcor",
@@ -20,14 +21,15 @@ packages <- c("boot",
 lapply(packages,require,character.only=TRUE)
 
 # load necessary functions
-source('fn_2SLS.R')
-source('estimate_kappa_bootstrap_wrapper.R')
-source('fn_complement.R')
-source('fn_complement_knockoff.R')
-source('fn_test_instrument_validity.R')
-source('estimate_confounding_via_kernel_smoothing.R')
-source('estimate_confounding_sigmas.R')
-
+source('IV_test_code/fn_2SLS.R')
+source('IV_test_code/estimate_kappa_bootstrap_wrapper.R')
+source('IV_test_code/fn_complement.R')
+source('IV_test_code/fn_complement_knockoff.R')
+source('IV_test_code/fn_test_instrument_validity.R')
+source('IV_test_code/estimate_confounding_via_kernel_smoothing.R')
+source('IV_test_code/estimate_confounding_sigmas.R')
+source('IV_test_code/estimate_confounding_via_kernel_smoothing.R')
+source('IV_test_code/estimate_confounding_sigmas.R')
 
 B = 500 # number of bootstrap draws
 ncpus = 10
@@ -59,24 +61,17 @@ p_values = function(ordered_data, signals){
 
 
 results = matrix(0, nrow = 100, ncol = 7)
-pb = txtProgressBar(min = 1, max = 100, initial = 1, style = 3) 
-for (i in 1:100) {
-  sg_path = get_path("sim_data/signals/estimated_signals_", i)
+pb = txtProgressBar(min = 0, max = 99, initial = 0, style = 3) 
+for (i in 0:99) {
+  #sg_path = get_path("sim_data/signals/estimated_signals_", i)
+  sg_path = get_path("sim_data_separate_signels/estimated_signals_separate_CausalVarEM_", i)
   dt_path = get_path("sim_data/data/data_obs_", i)
-  data =  read.csv(dt_path, header = F)
-  signals = read.csv(sg_path, header = F)
+  data =  read.csv(dt_path, header = T)
+  signals = read.csv(sg_path, header = T)
   ordered_data = order_data(data)
-  results[i,1] = i
-  results[i,2:7] = p_values(ordered_data, signals)
+  results[i+1,1] = i
+  results[i+1,2:7] = p_values(ordered_data, signals)
   setTxtProgressBar(pb,i)
-  
 }
-i = 0
-sg_path = get_path("sim_data/signals/estimated_signals_", i)
-dt_path = get_path("sim_data/data/data_obs_", i)
-data =  read.csv(dt_path, header = F)
-signals = read.csv(sg_path, header = F)
-ordered_data = order_data(data)
-results[100,1] = i
-results[100,2:7] = p_values(ordered_data, signals)
-write.csv(results, file = "p_values_ICA.csv")
+
+write.csv(results, file = "IV_test_results/p_values_CausalVarEM_separate_pen_100.csv")
