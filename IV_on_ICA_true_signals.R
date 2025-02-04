@@ -32,14 +32,14 @@ source('IV_test_code/estimate_confounding_via_kernel_smoothing.R')
 source('IV_test_code/estimate_confounding_sigmas.R')
 
 B = 500 # number of bootstrap draws
-ncpus = 10
+ncpus = 12
 synthetic_D_method = 'standard'
 kappa_method = 'sigmas'
 
 order_data = function(data){
   ordered_data = matrix(0, nrow = nrow(data), ncol = ncol(data))
   ordered_data[,1] = data[, ncol(data)] # Y has to be the first column, in data it is the last
-  ordered_data[,2:(ncol(data)-1)] = as.matrix(data[,1:3]) # controlls in the middle
+  ordered_data[,2:(ncol(data)-1)] = as.matrix(data[,1:(ncol(data)-2)]) # controls in the middle
   ordered_data[,ncol(data)] = data[, ncol(data)-1] # Treatment as last
   return(ordered_data)
 }
@@ -49,8 +49,8 @@ get_path = function(str, i){
 }
 
 p_values = function(ordered_data, signals){
-  p_val = rep(0,6)
-  for (i in 1:length(names(signals))) {
+  p_val = rep(0,ncol(signals))
+  for (i in 1:ncol(signals)) {
     p_val[i] = fn_test_instrument_validity(ordered_data, signals[[names(signals)[i]]], B, 
                                        ncpus, 
                                        kappa_method,
@@ -59,23 +59,19 @@ p_values = function(ordered_data, signals){
   return(p_val)
 }
 
-
-results = matrix(NA, nrow = 100, ncol = 7)
+J = 6
+results = matrix(0, nrow = 100, ncol = J+1)
 pb = txtProgressBar(min = 0, max = 99, initial = 0, style = 3) 
+i = 0
 for (i in 0:99) {
-  #sg_path = get_path("sim_data/signals/estimated_signals_", i)
-  sg_path = get_path("sim_data_separate_signels/estimated_signals_separate_CausalVarEM_", i)
+  sg_path = get_path("sim_data/signals/true_signals_", i)
   dt_path = get_path("sim_data/data/data_obs_", i)
-  data =  read.csv(dt_path, header = T)
-  signals = read.csv(sg_path, header = T)
+  data =  read.csv(dt_path, header = 1)
+  signals = read.csv(sg_path, header = 1) + matrix(rnorm(10000*J,0,.1), 10000,J)
   ordered_data = order_data(data)
   results[i+1,1] = i
-  results[i+1,2:7] = p_values(ordered_data, signals)
+  results[i+1,2:ncol(results)] = p_values(ordered_data, signals)
   setTxtProgressBar(pb,i)
 }
 
-
-
-write.csv(results, file = "IV_test_results/p_values_CausalVarEM_separate_pen_100.csv")
-
-
+write.csv(results, file = "IV_test_results/p_values_using_true_signals.csv")
