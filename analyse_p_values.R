@@ -10,8 +10,14 @@ table(apply(p_val, 1, function(x) sum(x == max(x))))
 
 
 # only applicable when we know the true source permutation
+# how often is the correct column the unique maximum
 sum(apply(p_val, 1, function(x) sum(x == max(x)) == 1 & which.max(x) == ncol(p_val)-1 ))
 
-sum(p_val$V9<.05)
+# how often is the correct column one of the maximum value
+
+sum(apply(p_val, 1, function(x) max(x) == x[ncol(p_val)-1]))
+
+# how often would one reject the correct columns as candidate
+sum(p_val$V9 < 0.05)
 
       
