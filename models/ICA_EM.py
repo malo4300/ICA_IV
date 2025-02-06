@@ -185,14 +185,15 @@ class VarEM():
 
 
 class CausalVarEM(VarEM):
-    def __init__(self, update_sigma=False, true_A=None, tol=1e-4, mode = "each", **kwargs):
+    def __init__(self, update_sigma=False, true_A=None, tol=1e-4, mode = "lower_triangular", **kwargs):
         """mode: indicates how to enforce the causal structure
+        "VarEM": does classic VarEM 
         "init": enforce the causal structure at the initialization
         "each": enforce the causal structure after each update of A
         "pre_treatment_controlls": enforce the causal structure and set the edges from the treatment and outcome to the controls to zero
         "lower_triangular": assumes that we know the dag such that we know the matrix is lower triangular"
         """
-        if mode not in ["init", "each", "pre_treatment_controlls", "lower_triangular" ]:
+        if mode not in ["VarEM", "init", "each", "pre_treatment_controlls", "lower_triangular" ]:
             raise ValueError("mode must be either 'init', 'each', or 'pre_treatment_controlls', 'lower_triangular'")
         self.mode = mode
         super().__init__(update_sigma=update_sigma, true_A=true_A, tol=tol, **kwargs)
@@ -222,7 +223,8 @@ class CausalVarEM(VarEM):
     
     def _initilize_A(self):
         super()._initilize_A()
-        self._enforce_causal_structure()
+        if self.mode != "VarEM":
+            self._enforce_causal_structure()
         
     def _enforce_causal_structure(self):
         # assume that the first column is the confounder source
