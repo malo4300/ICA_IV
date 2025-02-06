@@ -5,3 +5,7 @@ sim_data_VarEM/
 IV_test_code/
 *.csv
 .Rproj.user
+.Rdata
+.Rhistory
+.extended_dgp/
+*.Rproj
