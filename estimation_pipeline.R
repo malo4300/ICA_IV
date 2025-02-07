@@ -12,6 +12,8 @@ for (i in 1:100) {
 
 # unique outputs, these are the only ones on which we can safely to the fitting
 print(paste("we can run a regression in", sum(sapply(cand, function(x) length(x) == 1 && !is.na(x))), "cases"))
+print(paste("Number of NAs", sum(sapply(cand, function(x) any(is.na(x))))))
+print(paste("Number of non-unique outputs", sum(sapply(cand, function(x) length(x)>1))))
 
 # find index of unique values ----
 
@@ -26,13 +28,13 @@ estimated_treatment_efect = rep(NA,l)
 
 J = 9
 I = J-1
+treatment_col = I-1 # by construction
 for (i in 1:l){
   seed = ind[i]-1
   indx = ind[i]
-  signals = read.csv(get_path("extended_dgp/signals/estimated_signals_VarEM_", seed))
+  signals = read.csv(get_path("extended_dgp/signals/estimated_signals_lower_triangular_", seed))
   data = read.csv(get_path("extended_dgp/data/data_obs_", seed))
   confounder_source_col = as.numeric(cand[indx])
-  treatment_col = I-1 # by construction
   df = data.frame(y = data[,I], treatment = data[, treatment_col], data[,c(-treatment_col, -I)], conf = signals[,confounder_source_col])
   fit = lm(y~.,df)  
   estimated_treatment_efect[i] = coef(fit)["treatment"] 
@@ -40,3 +42,4 @@ for (i in 1:l){
 }  
 
 plot(true_treatment_effect,estimated_treatment_efect )
+abline(a = 0, b = 1)
