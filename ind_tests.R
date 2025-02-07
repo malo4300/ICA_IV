@@ -10,9 +10,9 @@ for (i in 0:99) {
     signals = read.csv(paste("extended_dgp/signals/true_signals_", i, ".csv", sep = ""), header = 1)
   #signal_est = read.csv(paste("sim_data_VarEM/signals/estimated_signals_", i, ".csv", sep = ""), header = 1)
   p_val = rep(NA,J)
-  controlls = data_obs[,1:(ncol(data_obs)-2)]  
+  controlls = data_obs[,1:(ncol(data_obs)-2)] 
   for (j in 1:J) {
-    p_val[j] = ci.test(T,signals[,j]+ rnorm(10000, 0, .1) , controlls)$p.value # when using true sources add rnorm(10000, 0, .1)
+    p_val[j] = ci.test(T,signals[,j] + rnorm(10000, 0, .1), controlls)$p.value # when using true sources add rnorm(10000, 0, .1)
   }
   p_vals[i+1,] = p_val
   setTxtProgressBar(pb,i)
@@ -24,7 +24,7 @@ for (i in 0:99) {
 }
 
 p_vals = read.csv("ind_tests/true_signals.csv", row.names = NULL)
-p_val_noise = read.csv("ind_tests/true_signals_noise.csv", row.names = NULL)
+p_vals_noise = read.csv("ind_tests/true_signals_noise.csv", row.names = NULL)
 # how many p values are essentially zero
 table(apply(p_vals, 1, function(x) sum(x == 0)))
 

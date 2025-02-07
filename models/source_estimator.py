@@ -3,9 +3,10 @@ import cvxpy as cp
 class SourceEstimator():
     """Estimate the sources based on paramteric assumption and the noisless mixing model"""
     
-    def __init__(self, paras = None, noise = False):
+    def __init__(self, paras = None, noise = False, solver = "OSQP"):
         self.paras = paras
         self.noisy_case = noise
+        self.solver = solver
         # TODO: use paraemters to generalize 
 
     def fit(self, data, A_hat, lambda_ = 0 ):
@@ -34,7 +35,7 @@ class SourceEstimator():
 
         # Formulate and solve the problem
         problem = cp.Problem(objective, constraints)
-        problem.solve()
+        problem.solve(solver = self.solver)
 
         # Retrieve the solution
         self.Signals = signals.value 
@@ -50,7 +51,7 @@ class SourceEstimator():
 
         # Solve the problem
         problem = cp.Problem(objective, constraints)
-        problem.solve()
+        problem.solve(solver = self.solver)
 
         # Store the result
         self.Signals = signals.value
