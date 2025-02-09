@@ -18,6 +18,6 @@ sum(apply(p_val, 1, function(x) sum(x == max(x)) == 1 & which.max(x) == ncol(p_v
 sum(apply(p_val, 1, function(x) max(x) == x[ncol(p_val)-1]))
 
 # how often would one reject the correct columns as candidate
-sum(p_val$V9 < 0.05)
+sum(p_val$V9 == 0 )
 
       

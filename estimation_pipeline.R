@@ -4,9 +4,9 @@ p_values_indp = read.csv("ind_tests/large_DAG_CausalVarEM.csv", row.names = NULL
 
 
 cand <- vector("list", 100)
-
+i = 1
 for (i in 1:100) {
-  candidates <- estimated_confounder_index(p_values_iv[i,], p_values_indp[i,])
+  candidates <- estimated_confounder_index_v2(p_values_iv[i,], p_values_indp[i,])
   cand[[i]] <- candidates
 }
 
@@ -41,5 +41,6 @@ for (i in 1:l){
   true_treatment_effect[i] = get_true_treatment_from_mixing_matrix(path = "extended_dgp/mixing_matrix/true_mixing_",i = seed)
 }  
 
-plot(true_treatment_effect,estimated_treatment_efect )
+plot(true_treatment_effect,estimated_treatment_efect ,xlab = "True treatment", ylab = "Estimated treatment via OLS",
+     main= "Using CausalVarEM sources")
 abline(a = 0, b = 1)

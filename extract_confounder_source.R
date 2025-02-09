@@ -25,8 +25,8 @@ estimated_confounder_index = function(p_values_iv,p_values_indp){
   
   candidates = which(ordered_p_values[2]  >= as.numeric(p_values_indp))
 
-  
-  final_candidate = ind_iv_max[ind_iv_max %in% candidates]
+  # remove the source selected by the IV test
+  final_candidate = candidates[!candidates %in% ind_iv_max]
   
   if(length(final_candidate)>1){
     warning("Final candidate not unique")
@@ -36,6 +36,32 @@ estimated_confounder_index = function(p_values_iv,p_values_indp){
     return(NA)
   }
   return(final_candidate)
+}
+
+
+estimated_confounder_index_v2 = function(p_values_iv,p_values_indp){
+  
+  # for the independence test, the only not independent sources should be the treatment and confounder source, pick the smallest two p-values if unique
+  
+  ordered_p_values =  sort(as.numeric(p_values_indp))
+  if(ordered_p_values[2] == ordered_p_values[3]){
+    warning("Independence test return non-unique candidates for treatment and confounde source")
+  }
+  
+  candidates = which(ordered_p_values[2]  >= as.numeric(p_values_indp))
+  
+  # find the max p-values for the candidates and remove this 
+  mx = max(p_values_iv[candidates]) 
+  final_candidates = candidates[p_values_iv[candidates] != mx] 
+  
+  if(length(final_candidates)>1){
+    warning("Final candidate not unique")
+  }
+  if(length(final_candidates) == 0){
+    warning("No candidate: return NA")
+    return(NA)
+  }
+  return(final_candidates)
 }
 
 
