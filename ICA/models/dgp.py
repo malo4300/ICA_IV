@@ -81,7 +81,7 @@ class dgp():
 
 
 class dgp_extended():# build a simple class with enough controll that the IV tgest should work and that has the most simple independence testing 
-    def __init__(self, noise_dict = {"loc" : 0, "scale" : 0}, prior = False):
+    def __init__(self, noise_dict = {"loc" : 0, "scale" : 0}, prior = False, level_of_confounding = 1):
         if prior:
             self.loc = prior['loc']
             self.scale = prior['scale']
@@ -89,6 +89,7 @@ class dgp_extended():# build a simple class with enough controll that the IV tge
             self.loc = 0
             self.scale = 1/np.sqrt(2)
         self.noise = noise_dict
+        self.level_of_confounding = level_of_confounding
 
     def generate_data(self, n: int, I: int, J: int, random_state: int = 0, init_range = [-3,3]):
         np.random.seed(random_state)
@@ -139,6 +140,8 @@ class dgp_extended():# build a simple class with enough controll that the IV tge
     def _generate_coefficients_matrix(self, J: int, init_range = [-3,3]):
         coef_of_edges = np.random.uniform(low=init_range[0], high=init_range[1], size=(J, J))
         self.coef_mat = np.multiply(self.adj_matrx, coef_of_edges) 
+        self.coef_mat[J-2,0] = self.level_of_confounding*self.coef_mat[J-2,0] 
+        self.coef_mat[J-1,0] = self.level_of_confounding*self.coef_mat[J-2,0] 
 
     def _generate_signals(self, n: int, J):
         self.signal_T = np.random.laplace(loc=self.loc, scale=self.scale, size=n)

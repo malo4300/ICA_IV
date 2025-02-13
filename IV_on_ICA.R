@@ -62,21 +62,25 @@ p_values = function(ordered_data, signals){
 }
 J = 9
 results = matrix(0, nrow = 100, ncol = J+1)
-pb = txtProgressBar(min = 0, max = 99, initial = 0, style = 3) 
-i = 0
+pb <- progress_bar$new(
+  format = "[:bar] :percent | ETA: :eta",
+  total = 100, 
+  clear = TRUE, 
+  width = 60
+)i = 0
 for (i in 0:99) {
-  sg_path = get_path("extended_dgp/signals/estimated_signals_VarEM_", i)
-  dt_path = get_path("extended_dgp/data/data_obs_", i)
+  sg_path = get_path("extended_dgp/signals/estimated_signals_CausalVarEM_conf3_", i)
+  dt_path = get_path("extended_dgp/data/data_obs_conf3_", i)
   data =  read.csv(dt_path, header = 1)
   signals = read.csv(sg_path, header = 1) 
   ordered_data = order_data(data)
   results[i+1,1] = i
   results[i+1,2:ncol(results)] = p_values(ordered_data, signals)
-  setTxtProgressBar(pb,i)
+pb$tick()
 }
 
 
 
-write.csv(results, file = "IV_test_results/p_values_VarEM_extended_DGP.csv")
+write.csv(results, file = "IV_test_results/p_values_CausalVarEM_extended_DGP_conf3.csv")
 
 

@@ -1,5 +1,5 @@
 
-results = read.csv("IV_test_results/p_values_using_true_signals_large_DAG.csv")
+results = read.csv("IV_test_results/p_values_true_signals_LDAG_conf3.csv")
 
 p_val = results[,3:ncol(results)]
 
@@ -18,6 +18,6 @@ sum(apply(p_val, 1, function(x) sum(x == max(x)) == 1 & which.max(x) == ncol(p_v
 sum(apply(p_val, 1, function(x) max(x) == x[ncol(p_val)-1]))
 
 # how often would one reject the correct columns as candidate
-sum(p_val$V9 == 0 )
+sum(p_val$V9 < .05)
 
       
