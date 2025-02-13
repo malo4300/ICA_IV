@@ -1,5 +1,5 @@
 
-results = read.csv("IV_test_results/p_values_true_signals_LDAG_conf3.csv")
+results = read.csv("IV_test_results/p_values_CausalVarEM_extended_DGP.csv")
 
 p_val = results[,3:ncol(results)]
 

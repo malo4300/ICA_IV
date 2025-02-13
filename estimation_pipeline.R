@@ -1,12 +1,12 @@
 source("extract_confounder_source.R")
-p_values_iv = read.csv("IV_test_results/p_values_VarEM_extended_DGP.csv", row.names = 1)[-1]
+  p_values_iv = read.csv("IV_test_results/p_values_VarEM_extended_DGP.csv", row.names = 1)[-1]
 p_values_indp = read.csv("ind_tests/FCIT_VarEM.csv", row.names = NULL, header= FALSE)[,3:11]
 
 
 cand <- vector("list", 100)
 i = 1
 for (i in 1:100) {
-  candidates <- estimated_confounder_index_v3(p_values_iv[i,], p_values_indp[i,])
+  candidates <- estimated_confounder_index_v2(p_values_iv[i,], p_values_indp[i,])
   cand[[i]] <- candidates
 }
 
@@ -32,7 +32,7 @@ treatment_col = I-1 # by construction
 for (i in 1:l){
   seed = ind[i]-1
   indx = ind[i]
-  signals = read.csv(get_path("extended_dgp/signals/estimated_signals_VarEM_", seed))
+  signals = read.csv(get_path("extended_dgp/signals/estimated_signals_lower_triangular_", seed))
   data = read.csv(get_path("extended_dgp/data/data_obs_", seed))
   confounder_source_col = as.numeric(cand[indx])
   df = data.frame(y = data[,I], treatment = data[, treatment_col], data[,c(-treatment_col, -I)], conf = signals[,confounder_source_col])

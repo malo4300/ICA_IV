@@ -21,5 +21,5 @@ def sim(mode, B, iter, dgp_, name):
 if __name__ == "__main__":
     J = 9
     I = J-1
-    n = 10000
-    sim("lower_triangular", 100, 100, dgp_extended, "init24")
+    n = 1000
+    sim("VarEM", 100, 100, dgp_extended, "init24")

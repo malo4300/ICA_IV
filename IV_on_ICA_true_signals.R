@@ -30,6 +30,7 @@ source('IV_test_code/estimate_confounding_via_kernel_smoothing.R')
 source('IV_test_code/estimate_confounding_sigmas.R')
 source('IV_test_code/estimate_confounding_via_kernel_smoothing.R')
 source('IV_test_code/estimate_confounding_sigmas.R')
+library(progress)
 
 B = 500 # number of bootstrap draws
 ncpus = 12
@@ -60,6 +61,7 @@ p_values = function(ordered_data, signals){
 }
 
 J = 9
+n = 1000
 results = matrix(0, nrow = 100, ncol = J+1)
 cand <- vector("list", 100)
 pb <- progress_bar$new(
@@ -70,14 +72,14 @@ pb <- progress_bar$new(
 )
 i = 0
 for (i in 0:99) {
-  sg_path = get_path("extended_dgp/signals/true_signals_conf3_", i)
-  dt_path = get_path("extended_dgp/data/data_obs_conf3_", i)
+  sg_path = get_path("extended_dgp/signals/true_signals_", i)
+  dt_path = get_path("extended_dgp/data/data_obs_", i)
   data =  read.csv(dt_path, header = 1)
-  signals = read.csv(sg_path, header = 1) + matrix(rnorm(10000*J,0,.1), 10000,J)
+  signals = read.csv(sg_path, header = 1) + matrix(rnorm(n*J,0,.1), n,J)
   ordered_data = order_data(data)
   results[i+1,1] = i
   results[i+1,2:ncol(results)] = p_values(ordered_data, signals)
   pb$tick()
 }
 
-write.csv(results, file = "IV_test_results/p_values_true_signals_LDAG_conf3.csv")
+#write.csv(results, file = "IV_test_results/p_values_true_signals_LDAG_conf6.csv")

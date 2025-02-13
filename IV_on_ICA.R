@@ -30,9 +30,10 @@ source('IV_test_code/estimate_confounding_via_kernel_smoothing.R')
 source('IV_test_code/estimate_confounding_sigmas.R')
 source('IV_test_code/estimate_confounding_via_kernel_smoothing.R')
 source('IV_test_code/estimate_confounding_sigmas.R')
+library(progress)
 
 B = 500 # number of bootstrap draws
-ncpus = 10
+ncpus = 12
 synthetic_D_method = 'standard'
 kappa_method = 'sigmas'
 
@@ -67,10 +68,11 @@ pb <- progress_bar$new(
   total = 100, 
   clear = TRUE, 
   width = 60
-)i = 0
+)
+i = 0
 for (i in 0:99) {
-  sg_path = get_path("extended_dgp/signals/estimated_signals_CausalVarEM_conf3_", i)
-  dt_path = get_path("extended_dgp/data/data_obs_conf3_", i)
+  sg_path = get_path("extended_dgp/signals/estimated_signals_CausalVarEM_conf6_", i)
+  dt_path = get_path("extended_dgp/data/data_obs_conf6_", i)
   data =  read.csv(dt_path, header = 1)
   signals = read.csv(sg_path, header = 1) 
   ordered_data = order_data(data)
@@ -81,6 +83,6 @@ pb$tick()
 
 
 
-write.csv(results, file = "IV_test_results/p_values_CausalVarEM_extended_DGP_conf3.csv")
+write.csv(results, file = "IV_test_results/p_values_CausalVarEM_extended_DGP_conf6.csv")
 
 
