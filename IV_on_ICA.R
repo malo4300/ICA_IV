@@ -69,10 +69,11 @@ pb <- progress_bar$new(
   clear = TRUE, 
   width = 60
 )
-i = 0
+i =0
 for (i in 0:99) {
-  sg_path = get_path("extended_dgp/signals/estimated_signals_CausalVarEM_conf6_", i)
-  dt_path = get_path("extended_dgp/data/data_obs_conf6_", i)
+  
+  sg_path = get_path("increase_conf/signals/estimated_signals_VarEM_large_conf_3_", i)
+  dt_path = get_path("increase_conf/data/data_obs_large_conf_3_", i)
   data =  read.csv(dt_path, header = 1)
   signals = read.csv(sg_path, header = 1) 
   ordered_data = order_data(data)
@@ -83,6 +84,6 @@ pb$tick()
 
 
 
-write.csv(results, file = "IV_test_results/p_values_CausalVarEM_extended_DGP_conf6.csv")
+write.csv(results, file = "IV_test_results/increased_confounding/")
 
 

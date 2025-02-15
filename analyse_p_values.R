@@ -1,5 +1,5 @@
 
-results = read.csv("IV_test_results/p_values_CausalVarEM_extended_DGP.csv")
+results = read.csv("IV_test_results/p_values_true_signals_SDAG_conf6.csv")
 
 p_val = results[,3:ncol(results)]
 
@@ -18,6 +18,6 @@ sum(apply(p_val, 1, function(x) sum(x == max(x)) == 1 & which.max(x) == ncol(p_v
 sum(apply(p_val, 1, function(x) max(x) == x[ncol(p_val)-1]))
 
 # how often would one reject the correct columns as candidate
-sum(p_val$V9 < .05)
+sum(p_val$V6 < .05)
 
       

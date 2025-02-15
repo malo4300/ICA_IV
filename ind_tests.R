@@ -3,14 +3,14 @@ library(abjutils)
 
 
 J= 9# number of sources. We assume the treatment is the second last column
-n = 10000
+n = 1000
 p_vals = matrix(NA,100,J)
 pb = txtProgressBar(min = 0, max = 99, initial = 0, style = 3) 
 
 for (i in 0:99) {
-  data_obs = read.csv(paste("extended_dgp/data/data_obs_init24_", i, ".csv", sep = ""), header = 1)
+  data_obs = read.csv(paste("increase_conf/data/data_obs_large_conf_3_", i, ".csv", sep = ""), header = 1)
   T = data_obs[,ncol(data_obs)-1] 
-    signals = read.csv(paste("extended_dgp/signals/estimated_signals_CausalVarEM_init24_", i, ".csv", sep = ""), header = 1)
+    signals = read.csv(paste("increase_conf/signals/estimated_signals_VarEM_large_conf_3_", i, ".csv", sep = ""), header = 1)
   #signal_est = read.csv(paste("sim_data_VarEM/signals/estimated_signals_", i, ".csv", sep = ""), header = 1)
   p_val = rep(NA,J)
   controlls = data_obs[,1:(ncol(data_obs)-2)] 
@@ -19,16 +19,14 @@ for (i in 0:99) {
   }
   p_vals[i+1,] = p_val
   setTxtProgressBar(pb,i)
-  if (i == 99) {
-    write.csv(p_vals, file = "ind_tests/LDAG_CausalVarEM_init24.csv", row.names = FALSE)
-    
-  }
   rm(data_obs,signals, controlls ) # helps to avoid crashes
 }
 
+write.csv(p_vals, "ind_tests/increase_conf/VarEM_large_conf_3_old.csv")
+
 p_vals = read.csv("ind_tests/LDAG_CausalVarEM_init24.csv", row.names = NULL)
 #p_vals = read.csv("ind_tests/FCIT_Causal_Var_EM.csv", row.names = 1)[-1]
-p_vals_noise = read.csv("ind_tests/true_signals_noise.csv", row.names = NULL)
+p_vals_noise = read.csv("ind_tests/increase_conf/LDAG_conf_3.csv", row.names = NULL)
 # how many p values are essentially zero
 table(apply(p_vals, 1, function(x) sum(x == 0)))
 

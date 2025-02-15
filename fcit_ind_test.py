@@ -15,15 +15,17 @@ def p_vals(data, signals, n, J):
 
 if __name__ == "__main__":
     J = 9
+    I = J-1
     n = 1000
-    p_values = np.ones((100,J))
+    conf_levels = [1,3,6]
    
+    for j in range(len(conf_levels)):
+        p_values = np.ones((100,J))
+        conf = conf_levels[j]
+        for i in tqdm(range(100)):
+                data_obs = pd.read_csv(f"increase_conf/data/data_obs_large_conf_{conf}_{i}.csv", header=0).values
+                signals = pd.read_csv(f"increase_conf/signals/estimated_signals_CausalVarEM_large_conf_{conf}_{i}.csv", header=0).values
+                p_values[i,:] = p_vals(data_obs, signals, n, J)
 
-
-    for i in tqdm(range(100)):
-            data_obs = pd.read_csv(f"extended_dgp/data/data_obs_init14_{i}.csv", header=0).values
-            signals = pd.read_csv(f"extended_dgp/signals/estimated_signals_VarEM_init14_{i}.csv", header=0).values
-            p_values[i,:] = p_vals(data_obs, signals, n, J)
-
-    pd.DataFrame(p_values).reset_index().to_csv(f"ind_tests/FCIT_VarEM_init14.csv", header=False, index = False)
+        pd.DataFrame(p_values).reset_index().to_csv(f"ind_tests/increase_conf/LDAG_conf_{conf}.csv", header=False, index = False)
 

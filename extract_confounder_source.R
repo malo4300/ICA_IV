@@ -86,30 +86,6 @@ estimated_confounder_index_v2 = function(p_values_iv,p_values_indp){
   return(final_candidates)
 }
 
-estimated_confounder_index_v3 = function(p_values_iv,p_values_indp){
-  
-  # for the independence test, the only not independent sources should be the treatment and confounder source, pick the smallest two p-values if unique
-  
-  ordered_p_values =  sort(as.numeric(p_values_indp))
-  if(ordered_p_values[2] == ordered_p_values[3]){
-    warning("Independence test return non-unique candidates for treatment and confounde source")
-  }
-  
-  candidates = which(ordered_p_values[2]  >= as.numeric(p_values_indp))
-  
-  # find the lowest p-values for the candidates
-  ll = min(p_values_iv[candidates]) 
-  final_candidates = candidates[p_values_iv[candidates] == ll] 
-  
-  if(length(final_candidates)>1){
-    warning("Final candidate not unique")
-  }
-  if(length(final_candidates) == 0){
-    warning("No candidate: return NA")
-    return(NA)
-  }
-  return(final_candidates)
-}
 
 
 online_extraction = function(p_values_indp, data_obs, signals){
