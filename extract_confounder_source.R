@@ -73,8 +73,31 @@ estimated_confounder_index_v2 = function(p_values_iv,p_values_indp){
   candidates = which(ordered_p_values[2]  >= as.numeric(p_values_indp))
   
   # find the max p-values for the candidates and remove this 
-  mx = max(p_values_iv[candidates]) 
-  final_candidates = candidates[p_values_iv[candidates] != mx] 
+   
+  mn = min(p_values_iv[candidates])
+  
+  final_candidates = candidates[p_values_iv[candidates] == mn] 
+  
+  if(length(final_candidates)>1){
+    warning("Final candidate not unique")
+  }
+  if(length(final_candidates) == 0){
+    warning("No candidate: return NA")
+    return(NA)
+  }
+  return(final_candidates)
+}
+
+estimated_confounder_index_v3 = function(p_values_iv,p_values_indp){
+  
+  # candidates are all with p-value smaller than .05. 
+  
+  
+  candidates = which(p_values_indp  < .05)
+  
+  # remove all cand. with IV p value larger than .05 
+  mx = max(p_values_iv[candidates])
+  final_candidates = candidates[p_values_iv[candidates] < mx] 
   
   if(length(final_candidates)>1){
     warning("Final candidate not unique")
@@ -112,7 +135,7 @@ online_extraction = function(p_values_indp, data_obs, signals){
     return(paste(str,i, ".csv", sep = "" ))
   }
   
-  B = 500 # number of bootstrap draws
+  B = 250 # number of bootstrap draws
   ncpus = 10
   synthetic_D_method = 'standard'
   kappa_method = 'sigmas'
