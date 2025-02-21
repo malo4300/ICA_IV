@@ -8,9 +8,9 @@ p_vals = matrix(NA,100,J)
 pb = txtProgressBar(min = 0, max = 99, initial = 0, style = 3) 
 
 for (i in 0:99) {
-  data_obs = read.csv(paste("increase_conf/data/data_obs_large_conf_1_", i, ".csv", sep = ""), header = 1)
+  data_obs = read.csv(paste("extended_dgp/bounded_coef/data/data_obs_init13_", i, ".csv", sep = ""), header = 1)
   T = data_obs[,ncol(data_obs)-1] 
-  signals = read.csv(paste("increase_conf/signals/estimated_signals_VarEM_large_conf_1_", i, ".csv", sep = ""), header = 1)
+  signals = read.csv(paste("extended_dgp/bounded_coef/signals/estimated_signals_VarEM_init13_", i, ".csv", sep = ""), header = 1)
   #signal_est = read.csv(paste("sim_data_VarEM/signals/estimated_signals_", i, ".csv", sep = ""), header = 1)
   p_val = rep(NA,J)
   controlls = data_obs[,1:(ncol(data_obs)-2)] 
@@ -22,7 +22,7 @@ for (i in 0:99) {
   rm(data_obs,signals, controlls ) # helps to avoid crashes
 }
 
-write.csv(p_vals, "ind_tests/increase_conf/VarEM_large_conf_1_old.csv")
+write.csv(p_vals, "ind_tests/increase_conf/LDAG_VarEM_init13_old.csv")
 
 p_vals = read.csv("ind_tests/increase_conf/CausalVarEM_large_conf_3_old.csv", row.names = NULL)[-1]
 p_vals = read.csv("ind_tests/increase_conf/VarEM_large_conf_3_old.csv", row.names = NULL)[-1]

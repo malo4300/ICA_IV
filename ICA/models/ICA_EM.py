@@ -194,7 +194,7 @@ class CausalVarEM(VarEM):
         "lower_triangular": assumes that we know the dag such that we know the matrix is lower triangular"
         """
         if mode not in ["VarEM", "init", "each", "pre_treatment_controlls", "lower_triangular" ]:
-            raise ValueError("mode must be either 'init', 'each', or 'pre_treatment_controlls', 'lower_triangular'")
+            raise ValueError("mode must be either 'VarEM', 'init', 'each', or 'pre_treatment_controlls', 'lower_triangular'")
         self.mode = mode
         super().__init__(update_sigma=update_sigma, true_A=true_A, tol=tol, **kwargs)
     
