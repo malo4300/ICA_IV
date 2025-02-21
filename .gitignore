@@ -3,7 +3,7 @@ results/
 sim_data/
 sim_data_VarEM/
 IV_test_code/
-
+increase_conf/data/*
 .Rproj.user
 *.Rdata
 .Rhistory
