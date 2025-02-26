@@ -94,11 +94,11 @@ class dgp_extended():# build a simple class with enough controll that the IV tge
         self.noise = noise_dict
         self.level_of_confounding = level_of_confounding
 
-    def generate_data(self, n: int, I: int, J: int, random_state: int = 0, init_range = [-3,3]):
+    def generate_data(self, n: int, I: int, J: int, random_state: int = 0, init_range = [-3,3], bounded_treatment = False):
         np.random.seed(random_state)
         self.no_controls = J - 3
         self._generate_dag(J)
-        self._generate_coefficients_matrix(J, init_range = init_range)
+        self._generate_coefficients_matrix(J, init_range = init_range, bounded_treatment = bounded_treatment)
         self._generate_signals(n, J)
 
         self._generate_mixing_matrix()
@@ -140,8 +140,16 @@ class dgp_extended():# build a simple class with enough controll that the IV tge
 
 
 
-    def _generate_coefficients_matrix(self, J: int, init_range = [-3,3]):
-        coef_of_edges = np.random.uniform(low=init_range[0], high=init_range[1], size=(J, J))
+    def _generate_coefficients_matrix(self, J: int, init_range = [-3,3], bounded_treatment = False):
+        coef_of_edges = np.zeros((J, J)) 
+        if bounded_treatment:
+            coef_of_edges = np.zeros((J, J))
+            for i in range(J):
+                for j in range(J):
+                        b = np.random.binomial(1, 0.5)
+                        coef_of_edges[i,j] = np.random.uniform(low=-3, high=-.5) * b + np.random.uniform(low=.5, high=3) * (1-b)
+        else:
+            coef_of_edges =np.random.uniform(low=init_range[0], high=init_range[1], size=(J, J))
         self.coef_mat = np.multiply(self.adj_matrx, coef_of_edges) 
         self.coef_mat[J-1,0] *= self.level_of_confounding
     def _generate_signals(self, n: int, J):

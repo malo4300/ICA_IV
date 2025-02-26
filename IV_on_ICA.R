@@ -3,8 +3,6 @@
 # implementation of instrument validity test developed in 
 # Burauel, Patrick F. "Evaluating Instrument Validity using the Principle of Independent Mechanisms." 
 # Journal of Machine Learning Research 24.176 (2023): 1-56.
-# https://jmlr.org/papers/v24/20-1287.html
-# abbreviated to B23 in the following
 ####################################################################
 
 rm(list = ls()) # To clear all
@@ -61,6 +59,7 @@ p_values = function(ordered_data, signals){
   }
   return(p_val)
 }
+
 J = 9
 results = matrix(0, nrow = 100, ncol = J+1)
 pb <- progress_bar$new(
@@ -70,8 +69,8 @@ pb <- progress_bar$new(
   width = 60
 )
 for (i in 0:99) {
-  sg_path = get_path("extended_dgp/bounded_coef/signals/estimated_signals_CausalVarEMVarEM_init05_1_", i)
-  dt_path = get_path("extended_dgp/bounded_coef/data/data_obs_init05_1_", i)
+  sg_path = get_path("extended_dgp/bounded_coef/signals/estimated_signals_CausalVarEM_init_flipp_", i)
+  dt_path = get_path("extended_dgp/bounded_coef/data/data_obs_init_flipp_", i)
   data =  read.csv(dt_path, header = 1)
   signals = read.csv(sg_path, header = 1) 
   ordered_data = order_data(data)
@@ -82,6 +81,6 @@ pb$tick()
 
 
 
-write.csv(results, file = "IV_test_results/increased_confounding/LDAG_CausalVarEM_init05.csv")
+write.csv(results, file = "IV_test_results/increased_confounding/LDAG_CausalVarEM_init_flipp.csv")
 
 
